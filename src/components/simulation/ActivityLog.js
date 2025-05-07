@@ -1,7 +1,7 @@
 import React from 'react';
-import { AlertCircle, AlertTriangle, Shield, Info, Terminal } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Shield, Info, Terminal, CheckCircle, XCircle } from 'lucide-react';
 
-const ActivityLog = ({ events }) => {
+const ActivityLog = ({ events, simulationActive }) => {
   const getEventIcon = (event) => {
     switch (event.type) {
       case 'sql_injection':
@@ -28,9 +28,13 @@ const ActivityLog = ({ events }) => {
       </div>
       <div className="p-2 overflow-auto" style={{ maxHeight: '400px' }}>
         <div className="space-y-2">
-          {events.length === 0 ? (
+          {!simulationActive && events.length === 0 ? (
             <div className="text-center p-4 text-gray-400">
-              No events recorded yet
+              No events recorded yet. Start a simulation to see activity.
+            </div>
+          ) : events.length === 0 ? (
+            <div className="text-center p-4 text-gray-400">
+              Waiting for security events...
             </div>
           ) : (
             events.map((event) => (

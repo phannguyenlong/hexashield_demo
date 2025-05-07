@@ -26,8 +26,8 @@ const SimulationPage = () => {
   const { securityEvents } = useSecurity();
   const [selectedScenario, setSelectedScenario] = useState(null);
   
-  // Filter recent events related to the simulation
-  const simulationEvents = securityEvents.slice(0, 10);
+  // Only show simulation events when simulation is active
+  const simulationEvents = activeSimulation ? securityEvents.slice(0, 10) : [];
   
   // Handle scenario selection
   const handleSelectScenario = (scenario) => {
@@ -46,7 +46,7 @@ const SimulationPage = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white">Attack Simulation</h2>
         <div className="flex space-x-2">
-          {!activeSimulation && (
+          {!activeSimulation && !simulationResults && (
             <button
               className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleStartSimulation}
@@ -88,7 +88,13 @@ const SimulationPage = () => {
       
       {!activeSimulation && !simulationResults && (
         <div className="bg-gray-700 rounded-lg p-4 shadow">
-          <h3 className="text-xl font-semibold text-white mb-4">Select Attack Scenario</h3>
+          <div className="flex items-center mb-4">
+            <Shield className="h-6 w-6 text-blue-500 mr-2" />
+            <h3 className="text-xl font-semibold text-white">Select Attack Scenario</h3>
+          </div>
+          <p className="text-gray-300 mb-4">
+            Choose an attack scenario to simulate against your infrastructure. These simulations demonstrate how HexaShield detects and responds to various attack vectors in real-time.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {availableScenarios.map(scenario => (
               <ScenarioCard
@@ -118,7 +124,7 @@ const SimulationPage = () => {
               <SimulationMonitor simulation={activeSimulation} />
             </div>
             <div>
-              <ActivityLog events={simulationEvents} />
+              <ActivityLog events={simulationEvents} simulationActive={true} />
             </div>
           </div>
         </>
