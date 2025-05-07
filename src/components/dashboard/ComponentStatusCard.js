@@ -32,6 +32,21 @@ const ComponentStatusCard = ({ component }) => {
     }
   };
 
+  const getStatusColor = () => {
+    switch (component.status) {
+      case 'operational':
+        return 'border-green-500 bg-green-500 bg-opacity-10';
+      case 'warning':
+        return 'border-yellow-500 bg-yellow-500 bg-opacity-10';
+      case 'critical':
+        return 'border-red-500 bg-red-500 bg-opacity-10';
+      case 'maintenance':
+        return 'border-blue-500 bg-blue-500 bg-opacity-10';
+      default:
+        return 'border-gray-500 bg-gray-500 bg-opacity-10';
+    }
+  };
+
   const getStatusTextColor = () => {
     switch (component.status) {
       case 'operational':
@@ -48,11 +63,11 @@ const ComponentStatusCard = ({ component }) => {
   };
 
   return (
-    <div className="bg-gray-800 rounded p-3 shadow-sm">
+    <div className={`border-l-4 ${getStatusColor()} rounded-r-lg p-3 shadow-sm`}>
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-white font-medium">{component.name}</h4>
-          <p className="text-gray-400 text-sm">{component.description}</p>
+          <p className="text-gray-400 text-xs">{component.version}</p>
         </div>
         <div className="flex items-center">
           <span className={`mr-2 text-sm font-medium ${getStatusTextColor()}`}>

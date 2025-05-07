@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background hexagon with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#0EA5E9" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
+      <feOffset dx="0" dy="2" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.7" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <clipPath id="shieldClip">
+      <path d="M150,170 L150,230 C150,230 200,210 200,170 L200,120 L150,120 Z" />
+    </clipPath>
+  </defs>
+  
+  <!-- Outer hexagon -->
+  <polygon points="150,50 241.5,100 241.5,200 150,250 58.5,200 58.5,100" 
+         fill="url(#bgGradient)" 
+         filter="url(#shadow)" />
+  
+  <!-- Inner hexagon (security layer) -->
+  <polygon points="150,70 220,110 220,190 150,230 80,190 80,110" 
+         fill="#1E293B" 
+         stroke="#3B82F6" 
+         stroke-width="2" />
+  
+  <!-- Shield shape -->
+  <path d="M150,90 
+           C150,90 100,110 100,150 
+           C100,190 150,210 150,210 
+           C150,210 200,190 200,150 
+           C200,110 150,90 150,90 Z" 
+        fill="#0F172A" 
+        stroke="#3B82F6" 
+        stroke-width="2"
+        filter="url(#shadow)" />
+  
+  <!-- Left side of shield (representing the security layers) -->
+  <path d="M150,90 L150,210 C150,210 100,190 100,150 C100,110 150,90 150,90 Z" 
+        fill="url(#bgGradient)" />
+  
+  <!-- Right side of shield (with a different gradient) -->
+  <path d="M150,90 L150,210 C150,210 200,190 200,150 C200,110 150,90 150,90 Z" 
+        fill="#1E293B" />
+  
+  <!-- Security layers visualization (right side of shield) -->
+  <g clip-path="url(#shieldClip)">
+    <rect x="150" y="120" width="50" height="10" fill="#3B82F6" opacity="0.8" />
+    <rect x="150" y="140" width="50" height="10" fill="#8B5CF6" opacity="0.8" />
+    <rect x="150" y="160" width="50" height="10" fill="#10B981" opacity="0.8" />
+    <rect x="150" y="180" width="50" height="10" fill="#6366F1" opacity="0.8" />
+    <rect x="150" y="200" width="50" height="10" fill="#0EA5E9" opacity="0.8" />
+  </g>
+  
+  <!-- Center keyhole shape (symbolizing access control) -->
+  <circle cx="150" cy="140" r="15" fill="#1E293B" stroke="#3B82F6" stroke-width="2" />
+  <rect x="145" y="140" width="10" height="20" fill="#1E293B" stroke="#3B82F6" stroke-width="2" />
+  
+  <!-- Hexa grid pattern (representing the framework's structure) -->
+  <g opacity="0.2">
+    <line x1="150" y1="90" x2="150" y2="210" stroke="white" stroke-width="1" />
+    <line x1="100" y1="150" x2="200" y2="150" stroke="white" stroke-width="1" />
+    <line x1="125" y1="120" x2="175" y2="180" stroke="white" stroke-width="1" />
+    <line x1="125" y1="180" x2="175" y2="120" stroke="white" stroke-width="1" />
+  </g>
+</svg>

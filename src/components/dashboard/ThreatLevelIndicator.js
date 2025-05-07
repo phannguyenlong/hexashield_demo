@@ -8,21 +8,21 @@ const ThreatLevelIndicator = ({ level }) => {
         return {
           icon: <AlertCircle className="h-6 w-6" />,
           text: 'Critical',
-          color: 'bg-red-700 text-white',
+          color: 'from-red-600 to-red-700',
           border: 'border-red-500'
         };
       case 'high':
         return {
           icon: <AlertTriangle className="h-6 w-6" />,
           text: 'High',
-          color: 'bg-orange-700 text-white',
+          color: 'from-orange-600 to-orange-700',
           border: 'border-orange-500'
         };
       case 'medium':
         return {
           icon: <AlertTriangle className="h-6 w-6" />,
           text: 'Medium',
-          color: 'bg-yellow-700 text-white',
+          color: 'from-yellow-600 to-yellow-700',
           border: 'border-yellow-500'
         };
       case 'low':
@@ -30,7 +30,7 @@ const ThreatLevelIndicator = ({ level }) => {
         return {
           icon: <Shield className="h-6 w-6" />,
           text: 'Low',
-          color: 'bg-green-700 text-white',
+          color: 'from-green-600 to-green-700',
           border: 'border-green-500'
         };
     }
@@ -39,9 +39,9 @@ const ThreatLevelIndicator = ({ level }) => {
   const details = getLevelDetails();
 
   return (
-    <div className={`flex items-center space-x-2 px-4 py-2 rounded-full ${details.color} ${details.border} border`}>
+    <div className={`flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r ${details.color} ${details.border} border shadow-lg`}>
       {details.icon}
-      <span className="font-medium">
+      <span className="font-medium text-white">
         {details.text} Threat Level
       </span>
     </div>
