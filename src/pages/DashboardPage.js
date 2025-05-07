@@ -14,12 +14,26 @@ import RecentEventsTable from '../components/dashboard/RecentEventsTable';
 import ThreatLevelIndicator from '../components/dashboard/ThreatLevelIndicator';
 
 const DashboardPage = () => {
-  const { securityStatus, securityEvents, components } = useSecurity();
+  const { securityStatus, securityEvents, components, triggerAttackMode } = useSecurity();
   const [attacksData, setAttacksData] = useState([]);
   const [componentStatusData, setComponentStatusData] = useState([]);
   const [threatTypeData, setThreatTypeData] = useState([]);
   const [threatTrendData, setThreatTrendData] = useState([]);
   
+  // Add hidden API endpoint to trigger attack mode
+  useEffect(() => {
+    // Expose the attack trigger as a global function for demonstration
+    window.triggerHexaShieldAttack = (attackType) => {
+      console.log(`Triggering attack mode: ${attackType || 'sql_injection'}`);
+      triggerAttackMode(attackType || 'sql_injection');
+    };
+    
+    return () => {
+      // Clean up when component unmounts
+      delete window.triggerHexaShieldAttack;
+    };
+  }, [triggerAttackMode]);
+
   // Generate all dashboard data
   useEffect(() => {
     const generateData = () => {
@@ -107,7 +121,7 @@ const DashboardPage = () => {
     return colorMap[type] || '#6B7280';
   };
   
-  // Status card data
+  // Status card data - updated to show operational status
   const statusCards = [
     {
       title: 'System Status',
