@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSecurity } from '../contexts/SecurityContext';
-import { Layers, Server, Database, Globe, Code, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Layers, Server, Database, Globe, Code, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 
 // Components
 import IntegrationCard from '../components/integration/IntegrationCard';
@@ -9,12 +9,28 @@ import DatabaseConfig from '../components/integration/DatabaseConfig';
 import WebAppConfig from '../components/integration/WebAppConfig';
 import AuthConfig from '../components/integration/AuthConfig';
 import SystemTestResults from '../components/integration/SystemTestResults';
+import NetworkTopologyGraph from '../components/integration/NetworkTopologyGraph';
 
 const IntegrationPage = () => {
   const { components } = useSecurity();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('topology'); // Changed from 'overview' to 'topology'
   const [testResults, setTestResults] = useState(null);
+  const [savedTopology, setSavedTopology] = useState(null);
+  const [showTopologySuccess, setShowTopologySuccess] = useState(false);
   
+  // Load saved topology if it exists (would come from backend in a real application)
+  useEffect(() => {
+    // In a real app, this would fetch from your backend
+    const storedTopology = localStorage.getItem('hexashield_topology');
+    if (storedTopology) {
+      try {
+        setSavedTopology(JSON.parse(storedTopology));
+      } catch (e) {
+        console.error("Failed to load saved topology:", e);
+      }
+    }
+  }, []);
+
   // Mock integration points
   const integrationPoints = [
     {
@@ -88,6 +104,17 @@ const IntegrationPage = () => {
       }
     }, 1000);
   };
+
+  // Save network topology
+  const handleSaveTopology = (topology) => {
+    // In a real app, this would save to your backend
+    localStorage.setItem('hexashield_topology', JSON.stringify(topology));
+    setSavedTopology(topology);
+    setShowTopologySuccess(true);
+    setTimeout(() => {
+      setShowTopologySuccess(false);
+    }, 3000);
+  };
   
   // Render tab content
   const renderTabContent = () => {
@@ -102,6 +129,11 @@ const IntegrationPage = () => {
         return <AuthConfig />;
       case 'test':
         return <SystemTestResults results={testResults} onRunTest={runSystemTest} />;
+      case 'topology':
+        return <NetworkTopologyGraph 
+                 initialNetwork={savedTopology} 
+                 onSave={handleSaveTopology} 
+               />;
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -134,6 +166,16 @@ const IntegrationPage = () => {
           </button>
           <button
             className={`px-4 py-2 rounded-md text-white ${
+              activeTab === 'topology' 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-gray-600 hover:bg-gray-700'
+            }`}
+            onClick={() => setActiveTab('topology')}
+          >
+            Network Topology
+          </button>
+          <button
+            className={`px-4 py-2 rounded-md text-white ${
               activeTab === 'overview' 
                 ? 'bg-blue-600 hover:bg-blue-700' 
                 : 'bg-gray-600 hover:bg-gray-700'
@@ -145,10 +187,26 @@ const IntegrationPage = () => {
         </div>
       </div>
       
-      {/* Integration Architecture Diagram */}
+      {showTopologySuccess && (
+        <div className="bg-green-900 text-green-100 p-3 rounded-md flex items-center">
+          <CheckCircle className="h-5 w-5 mr-2" />
+          Network topology saved successfully.
+        </div>
+      )}
+      
+      {/* Integration Architecture Diagram - shown only in overview mode */}
       {activeTab === 'overview' && (
         <div className="bg-gray-700 rounded-lg shadow p-4">
-          <h3 className="text-lg font-medium text-white mb-4">HexaShield Integration Architecture</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium text-white">HexaShield Integration Architecture</h3>
+            <button
+              onClick={() => setActiveTab('topology')} 
+              className="text-blue-400 hover:text-blue-300 text-sm flex items-center"
+            >
+              Go to Network Topology Editor →
+            </button>
+          </div>
+          
           <div className="bg-gray-800 rounded-lg p-6 overflow-x-auto">
             <div className="flex flex-col items-center">
               <div className="text-center mb-8">
@@ -210,9 +268,60 @@ const IntegrationPage = () => {
         </div>
       )}
       
+      {/* Benefits of plug-and-play architecture - shown only in overview mode */}
+      {activeTab === 'overview' && (
+        <div className="bg-gray-700 rounded-lg p-4 shadow">
+          <h3 className="text-lg font-medium text-white mb-4">Benefits of Plug-and-Play Architecture</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-blue-500 bg-opacity-20 rounded-full mr-3">
+                  <Server className="h-6 w-6 text-blue-400" />
+                </div>
+                <h4 className="text-white font-medium">Easy Integration</h4>
+              </div>
+              <p className="text-gray-400 text-sm">
+                HexaShield components can be deployed alongside existing infrastructure with 
+                minimal configuration. The framework adapts to your environment rather than 
+                requiring you to adapt to it.
+              </p>
+            </div>
+            
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-green-500 bg-opacity-20 rounded-full mr-3">
+                  <Database className="h-6 w-6 text-green-400" />
+                </div>
+                <h4 className="text-white font-medium">Full Control</h4>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Since HexaShield is deployed within your infrastructure, you maintain complete 
+                control over your security systems. No need for third-party services or sending 
+                data outside your network.
+              </p>
+            </div>
+            
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-purple-500 bg-opacity-20 rounded-full mr-3">
+                  <Code className="h-6 w-6 text-purple-400" />
+                </div>
+                <h4 className="text-white font-medium">Open Source Foundation</h4>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Built on proven open-source security tools, HexaShield leverages community-tested 
+                solutions while providing the integration layer that makes these tools accessible 
+                to organizations without dedicated security teams.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Integration Configuration Content */}
       <div className="bg-gray-700 rounded-lg shadow overflow-hidden">
-        {activeTab !== 'overview' && (
+        {activeTab !== 'overview' && activeTab !== 'topology' && (
           <div className="bg-gray-800 border-b border-gray-600 px-4 py-3">
             {activeTab !== 'test' ? (
               <h3 className="text-lg font-medium text-white">
@@ -230,6 +339,44 @@ const IntegrationPage = () => {
           {renderTabContent()}
         </div>
       </div>
+
+      {/* Implementation guide */}
+      {activeTab === 'topology' && (
+        <div className="bg-gray-700 rounded-lg p-4 shadow">
+          <div className="flex items-center mb-3">
+            <Info className="h-5 w-5 text-blue-400 mr-2" />
+            <h3 className="text-lg font-medium text-white">Implementation Guide</h3>
+          </div>
+          
+          <p className="text-gray-300 mb-3">
+            The network topology editor helps you plan how HexaShield components will integrate with your existing infrastructure. 
+            Our framework is designed to be easily customized to fit your specific needs without requiring deep security expertise.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-gray-800 p-3 rounded">
+              <h4 className="text-white font-medium mb-2">Deployment Options</h4>
+              <ul className="text-gray-400 text-sm space-y-1 list-disc pl-5">
+                <li>On-premises deployment on your hardware</li>
+                <li>Virtual machine deployment</li>
+                <li>Containerized deployment with Docker</li>
+                <li>Private cloud deployment</li>
+              </ul>
+            </div>
+            
+            <div className="bg-gray-800 p-3 rounded">
+              <h4 className="text-white font-medium mb-2">Implementation Process</h4>
+              <ol className="text-gray-400 text-sm space-y-1 list-decimal pl-5">
+                <li>Network topology planning (current step)</li>
+                <li>Component installation and configuration</li>
+                <li>Integration with existing systems</li>
+                <li>Testing and validation</li>
+                <li>Deployment and ongoing maintenance</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
