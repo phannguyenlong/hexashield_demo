@@ -205,80 +205,83 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
   // Generate default nodes for first-time setup
   function getDefaultNodes() {
     return [
-      // Internet and Network Infrastructure
-      { id: 'internet-1', type: 'internet', name: 'Internet', x: 400, y: 50, isHexaShield: false },
-      { id: 'router-1', type: 'router', name: 'Edge Router', x: 400, y: 140, isHexaShield: false },
-      { id: 'firewall-1', type: 'firewall', name: 'Perimeter Firewall', x: 400, y: 230, isHexaShield: false },
-      { id: 'load-balancer', type: 'loadBalancer', name: 'Load Balancer', x: 400, y: 320, isHexaShield: false },
-      
-      // SME Infrastructure
-      { id: 'webapp-1', type: 'webapp', name: 'Web Application', x: 250, y: 400, isHexaShield: false },
-      { id: 'webapp-2', type: 'webapp', name: 'API Service', x: 400, y: 400, isHexaShield: false },
-      { id: 'database-1', type: 'database', name: 'Database', x: 550, y: 400, isHexaShield: false },
-      { id: 'fileserver-1', type: 'fileserver', name: 'File Server', x: 250, y: 500, isHexaShield: false },
-      { id: 'erp-system', type: 'erp_system', name: 'ERP System', x: 400, y: 500, isHexaShield: false },
-      { id: 'crm-system', type: 'crm_system', name: 'CRM System', x: 550, y: 500, isHexaShield: false },
-      
-      // HexaShield Components
-      { id: 'hexashield-core', type: 'central_management', name: 'HexaShield Core', x: 700, y: 230, isHexaShield: true },
-      { id: 'hexashield-monitor', type: 'monitoring', name: 'HexaShield Monitoring', x: 700, y: 140, isHexaShield: true },
-      { id: 'hexashield-protection', type: 'protection', name: 'HexaShield Protection', x: 700, y: 320, isHexaShield: true },
-      { id: 'hexashield-auth', type: 'authentication', name: 'HexaShield Auth', x: 700, y: 400, isHexaShield: true },
-      
-      // HexaShield Tools
-      { id: 'tool-modsecurity', type: 'modsecurity', name: 'ModSecurity WAF', x: 850, y: 180, isHexaShield: true },
-      { id: 'tool-greensql', type: 'greensql', name: 'GreenSQL', x: 850, y: 250, isHexaShield: true },
-      { id: 'tool-wazuh', type: 'wazuh', name: 'Wazuh Agents', x: 850, y: 320, isHexaShield: true },
-      { id: 'tool-packetfence', type: 'packetfence', name: 'PacketFence', x: 850, y: 390, isHexaShield: true },
-      { id: 'tool-suricata', type: 'suricata', name: 'Suricata IDS/IPS', x: 950, y: 180, isHexaShield: true },
-      { id: 'tool-graylog', type: 'graylog', name: 'Graylog', x: 950, y: 250, isHexaShield: true },
-      { id: 'tool-owasp', type: 'owasp_zap', name: 'OWASP ZAP', x: 950, y: 320, isHexaShield: true },
+      // Internet
+      { id: 'internet-1', type: 'internet', name: 'Internet', x: 300, y: 40, isHexaShield: false },
+
+      // Edge Layer
+      { id: 'border-router', type: 'router', name: 'Border Router', x: 200, y: 160, isHexaShield: false },
+      { id: 'core-switch', type: 'server', name: 'Core Switch', x: 400, y: 160, isHexaShield: false },
+
+      // DMZ Layer (spread horizontally)
+      { id: 'web-server', type: 'webapp', name: 'Web Server (WAF)', x: 100, y: 320, isHexaShield: false },
+      { id: 'mail-server', type: 'server', name: 'Mail Server (SEC)', x: 300, y: 320, isHexaShield: false },
+      { id: 'vpn-server', type: 'server', name: 'VPN Server (SEC)', x: 500, y: 320, isHexaShield: false },
+      { id: 'internal-firewall', type: 'firewall', name: 'Internal Firewall', x: 300, y: 440, isHexaShield: false },
+
+      // Internal Network (spread horizontally)
+      { id: 'database-1', type: 'database', name: 'Database', x: 80, y: 600, isHexaShield: false },
+      { id: 'file-server', type: 'fileserver', name: 'File Server', x: 220, y: 600, isHexaShield: false },
+      { id: 'dev-servers', type: 'server', name: 'Dev Servers', x: 380, y: 600, isHexaShield: false },
+      { id: 'workstations', type: 'server', name: 'Workstations', x: 520, y: 600, isHexaShield: false },
+
+      // HexaShield Central Management
+      { id: 'hexashield-core', type: 'central_management', name: 'HexaShield Central Management', x: 900, y: 80, isHexaShield: true },
+
+      // Security Protection (single vertical column, spaced)
+      { id: 'modsecurity', type: 'modsecurity', name: 'Web App Firewall (ModSecurity)', x: 900, y: 200, isHexaShield: true },
+      { id: 'greensql', type: 'greensql', name: 'Database Security (GreenSQL)', x: 900, y: 300, isHexaShield: true },
+      { id: 'packetfence', type: 'packetfence', name: 'Network Access (PacketFence)', x: 900, y: 400, isHexaShield: true },
+      { id: 'wazuh', type: 'wazuh', name: 'Endpoint Protection (Wazuh Agents)', x: 900, y: 500, isHexaShield: true },
+
+      // Security Monitoring (vertical column, far right, spaced)
+      { id: 'suricata', type: 'suricata', name: 'Network IDS/IPS (Suricata)', x: 1200, y: 220, isHexaShield: true },
+      { id: 'ossec', type: 'wazuh', name: 'Host-based Agents (OSSEC/Wazuh)', x: 1200, y: 320, isHexaShield: true },
+      { id: 'graylog', type: 'graylog', name: 'Log Aggregator (Graylog)', x: 1200, y: 420, isHexaShield: true },
+      { id: 'owasp_zap', type: 'owasp_zap', name: 'App Scanners (OWASP ZAP)', x: 1200, y: 520, isHexaShield: true },
     ];
   }
   
   // Generate default edges for first-time setup
   function getDefaultEdges() {
     return [
-      // SME Infrastructure connections
-      { id: 'e1', from: 'internet-1', to: 'router-1', status: 'active' },
-      { id: 'e2', from: 'router-1', to: 'firewall-1', status: 'active' },
-      { id: 'e3', from: 'firewall-1', to: 'load-balancer', status: 'active' },
-      { id: 'e4', from: 'load-balancer', to: 'webapp-1', status: 'active' },
-      { id: 'e5', from: 'load-balancer', to: 'webapp-2', status: 'active' },
-      { id: 'e6', from: 'webapp-1', to: 'database-1', status: 'active' },
-      { id: 'e7', from: 'webapp-2', to: 'database-1', status: 'active' },
-      { id: 'e8', from: 'webapp-1', to: 'fileserver-1', status: 'active' },
-      { id: 'e9', from: 'erp-system', to: 'database-1', status: 'active' },
-      { id: 'e10', from: 'crm-system', to: 'database-1', status: 'active' },
-      
-      // HexaShield core component connections
-      { id: 'e11', from: 'hexashield-core', to: 'hexashield-monitor', status: 'secure' },
-      { id: 'e12', from: 'hexashield-core', to: 'hexashield-protection', status: 'secure' },
-      { id: 'e13', from: 'hexashield-core', to: 'hexashield-auth', status: 'secure' },
-      
-      // HexaShield tools connections to main components
-      { id: 'e14', from: 'hexashield-protection', to: 'tool-modsecurity', status: 'secure' },
-      { id: 'e15', from: 'hexashield-protection', to: 'tool-greensql', status: 'secure' },
-      { id: 'e16', from: 'hexashield-protection', to: 'tool-wazuh', status: 'secure' },
-      { id: 'e17', from: 'hexashield-protection', to: 'tool-packetfence', status: 'secure' },
-      { id: 'e18', from: 'hexashield-monitor', to: 'tool-suricata', status: 'secure' },
-      { id: 'e19', from: 'hexashield-monitor', to: 'tool-graylog', status: 'secure' },
-      { id: 'e20', from: 'hexashield-monitor', to: 'tool-owasp', status: 'secure' },
-      
-      // Integration connections between HexaShield tools and SME infrastructure
-      { id: 'e21', from: 'tool-modsecurity', to: 'webapp-1', status: 'integration' },
-      { id: 'e22', from: 'tool-modsecurity', to: 'webapp-2', status: 'integration' },
-      { id: 'e23', from: 'tool-greensql', to: 'database-1', status: 'integration' },
-      { id: 'e24', from: 'tool-suricata', to: 'router-1', status: 'integration' },
-      { id: 'e25', from: 'tool-wazuh', to: 'webapp-1', status: 'integration' },
-      { id: 'e26', from: 'tool-wazuh', to: 'webapp-2', status: 'integration' },
-      { id: 'e27', from: 'tool-wazuh', to: 'database-1', status: 'integration' },
-      { id: 'e28', from: 'tool-packetfence', to: 'router-1', status: 'integration' },
-      { id: 'e29', from: 'tool-owasp', to: 'webapp-1', status: 'integration' },
-      { id: 'e30', from: 'tool-owasp', to: 'webapp-2', status: 'integration' },
-      { id: 'e31', from: 'hexashield-auth', to: 'erp-system', status: 'integration' },
-      { id: 'e32', from: 'hexashield-auth', to: 'crm-system', status: 'integration' },
-      { id: 'e33', from: 'tool-graylog', to: 'firewall-1', status: 'integration' },
+      // Network flow
+      { id: 'e1', from: 'internet-1', to: 'border-router', status: 'active' },
+      { id: 'e2', from: 'border-router', to: 'core-switch', status: 'active' },
+      { id: 'e3', from: 'core-switch', to: 'web-server', status: 'active' },
+      { id: 'e4', from: 'core-switch', to: 'mail-server', status: 'active' },
+      { id: 'e5', from: 'core-switch', to: 'vpn-server', status: 'active' },
+      { id: 'e6', from: 'web-server', to: 'internal-firewall', status: 'active' },
+      { id: 'e7', from: 'mail-server', to: 'internal-firewall', status: 'active' },
+      { id: 'e8', from: 'vpn-server', to: 'internal-firewall', status: 'active' },
+      { id: 'e9', from: 'internal-firewall', to: 'database-1', status: 'active' },
+      { id: 'e10', from: 'internal-firewall', to: 'file-server', status: 'active' },
+      { id: 'e11', from: 'internal-firewall', to: 'dev-servers', status: 'active' },
+      { id: 'e12', from: 'internal-firewall', to: 'workstations', status: 'active' },
+
+      // Central Management to all security components
+      { id: 'e13', from: 'hexashield-core', to: 'modsecurity', status: 'secure' },
+      { id: 'e14', from: 'hexashield-core', to: 'greensql', status: 'secure' },
+      { id: 'e15', from: 'hexashield-core', to: 'packetfence', status: 'secure' },
+      { id: 'e16', from: 'hexashield-core', to: 'wazuh', status: 'secure' },
+      { id: 'e17', from: 'hexashield-core', to: 'suricata', status: 'secure' },
+      { id: 'e18', from: 'hexashield-core', to: 'ossec', status: 'secure' },
+      { id: 'e19', from: 'hexashield-core', to: 'graylog', status: 'secure' },
+      { id: 'e20', from: 'hexashield-core', to: 'owasp_zap', status: 'secure' },
+
+      // Security Protection components to relevant nodes
+      { id: 'e21', from: 'modsecurity', to: 'web-server', status: 'integration' },
+      { id: 'e22', from: 'greensql', to: 'database-1', status: 'integration' },
+      { id: 'e23', from: 'packetfence', to: 'vpn-server', status: 'integration' },
+      { id: 'e24', from: 'packetfence', to: 'workstations', status: 'integration' },
+      { id: 'e25', from: 'wazuh', to: 'dev-servers', status: 'integration' },
+      { id: 'e26', from: 'wazuh', to: 'workstations', status: 'integration' },
+
+      // Security Monitoring components to relevant nodes
+      { id: 'e27', from: 'suricata', to: 'border-router', status: 'integration' },
+      { id: 'e28', from: 'ossec', to: 'mail-server', status: 'integration' },
+      { id: 'e29', from: 'ossec', to: 'dev-servers', status: 'integration' },
+      { id: 'e30', from: 'graylog', to: 'internal-firewall', status: 'integration' },
+      { id: 'e31', from: 'owasp_zap', to: 'web-server', status: 'integration' },
     ];
   }
   
@@ -539,6 +542,37 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
     if (!sourceNode) return '';
     
     return `M ${sourceNode.x} ${sourceNode.y} L ${mousePosition.x} ${mousePosition.y}`;
+  };
+  
+  // Helper to get bounding box for a group of nodes
+  const getGroupBoundingBox = (nodeIds, padding = 70) => {
+    const groupNodes = network.nodes.filter(n => nodeIds.includes(n.id));
+    if (groupNodes.length === 0) return null;
+    const xs = groupNodes.map(n => n.x);
+    const ys = groupNodes.map(n => n.y);
+    const minX = Math.min(...xs) - padding;
+    const maxX = Math.max(...xs) + padding;
+    const minY = Math.min(...ys) - padding;
+    const maxY = Math.max(...ys) + padding;
+    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+  };
+
+  // Define node groups
+  const dmzIds = ['web-server', 'mail-server', 'vpn-server', 'border-router', 'core-switch'];
+  const internalIds = ['database-1', 'file-server', 'dev-servers', 'workstations', 'internal-firewall'];
+  const protectionIds = ['modsecurity', 'greensql', 'packetfence', 'wazuh'];
+  const monitoringIds = ['suricata', 'ossec', 'graylog', 'owasp_zap'];
+  const centralMgmtIds = ['hexashield-core'];
+
+  // Render group backgrounds with label above
+  const renderGroupBackground = (bbox, label, color, fill) => {
+    if (!bbox) return null;
+    return (
+      <g>
+        <rect x={bbox.x} y={bbox.y} width={bbox.width} height={bbox.height} rx="36" fill={fill} stroke={color} strokeWidth="4" />
+        <text x={bbox.x + bbox.width / 2} y={bbox.y - 16} fill={color} fontWeight="bold" fontSize="28" textAnchor="middle" style={{ pointerEvents: 'none', textShadow: '0 2px 8px #000' }}>{label}</text>
+      </g>
+    );
   };
   
   // ==================== Render Functions ====================
@@ -875,6 +909,13 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
           onClick={handleBackgroundClick}
           className="cursor-default"
         >
+          {/* Render group backgrounds first */}
+          {renderGroupBackground(getGroupBoundingBox(dmzIds), 'DMZ', '#22d3ee', 'rgba(34,211,238,0.08)')}
+          {renderGroupBackground(getGroupBoundingBox(internalIds), 'Internal Network', '#fbbf24', 'rgba(251,191,36,0.08)')}
+          {renderGroupBackground(getGroupBoundingBox(protectionIds), 'Security Protection & Response', '#4ade80', 'rgba(74,222,128,0.08)')}
+          {renderGroupBackground(getGroupBoundingBox(monitoringIds), 'Security Monitoring', '#818cf8', 'rgba(129,140,248,0.08)')}
+          {renderGroupBackground(getGroupBoundingBox(centralMgmtIds), 'Central Management', '#f472b6', 'rgba(244,114,182,0.10)')}
+
           {/* Render edges first (below nodes) */}
           <g className="edges">
             {network.edges.map(edge => renderEdge(edge))}
