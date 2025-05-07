@@ -13,7 +13,12 @@ import {
   BarChart, 
   Save,
   Trash2,
-  Plus
+  Plus,
+  Search,
+  FileText,
+  LockShield,
+  Cpu,
+  HardDrive
 } from 'lucide-react';
 
 // Main Network Topology Graph Component
@@ -68,6 +73,15 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
         return <Users className="h-8 w-8 text-yellow-400" />;
       case 'loadBalancer':
         return <Activity className="h-8 w-8 text-indigo-400" />;
+      // SME Infrastructure
+      case 'fileserver':
+        return <FileText className="h-8 w-8 text-orange-400" />;
+      case 'erp_system':
+        return <Cpu className="h-8 w-8 text-pink-400" />;
+      case 'crm_system':
+        return <Users className="h-8 w-8 text-cyan-400" />;
+      case 'storage':
+        return <HardDrive className="h-8 w-8 text-gray-400" />;
       // HexaShield Components
       case 'central_management':
         return <Layers className="h-8 w-8 text-blue-500" />;
@@ -79,6 +93,21 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
         return <Lock className="h-8 w-8 text-amber-500" />;
       case 'internet':
         return <Globe className="h-8 w-8 text-gray-500" />;
+      // HexaShield Specific Tools
+      case 'modsecurity':
+        return <Shield className="h-8 w-8 text-purple-500" />;
+      case 'greensql':
+        return <Database className="h-8 w-8 text-green-600" />;
+      case 'suricata':
+        return <Search className="h-8 w-8 text-blue-600" />;
+      case 'wazuh':
+        return <Shield className="h-8 w-8 text-orange-600" />;
+      case 'graylog':
+        return <FileText className="h-8 w-8 text-gray-600" />;
+      case 'owasp_zap':
+        return <Code className="h-8 w-8 text-red-600" />;
+      case 'packetfence':
+        return <Wifi className="h-8 w-8 text-indigo-600" />;
       default:
         return <Server className="h-8 w-8 text-gray-300" />;
     }
@@ -94,11 +123,22 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
       webapp: 'Web Application',
       user: 'User Group',
       loadBalancer: 'Load Balancer',
+      fileserver: 'File Server',
+      erp_system: 'ERP System',
+      crm_system: 'CRM System',
+      storage: 'Storage System',
       central_management: 'HexaShield Core',
       monitoring: 'HexaShield Monitoring',
       protection: 'HexaShield Protection',
       authentication: 'HexaShield Auth',
-      internet: 'Internet'
+      internet: 'Internet',
+      modsecurity: 'ModSecurity WAF',
+      greensql: 'GreenSQL DB Firewall',
+      suricata: 'Suricata IDS/IPS',
+      wazuh: 'Wazuh Security',
+      graylog: 'Graylog Log Mgmt',
+      owasp_zap: 'OWASP ZAP',
+      packetfence: 'PacketFence NAC'
     };
     return typeMap[type] || type;
   };
@@ -120,12 +160,30 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
         return 'bg-yellow-900 border-yellow-600';
       case 'loadBalancer':
         return 'bg-indigo-900 border-indigo-600';
+      // SME Infrastructure
+      case 'fileserver':
+        return 'bg-orange-900 border-orange-600';
+      case 'erp_system':
+        return 'bg-pink-900 border-pink-600';
+      case 'crm_system':
+        return 'bg-cyan-900 border-cyan-600';
+      case 'storage':
+        return 'bg-gray-900 border-gray-600';
       // HexaShield Components - make them stand out
       case 'central_management':
       case 'monitoring':
       case 'protection':
       case 'authentication':
         return 'bg-gradient-to-br from-gray-800 to-gray-900 border-blue-500';
+      // Specific tools
+      case 'modsecurity':
+      case 'greensql':
+      case 'suricata':
+      case 'wazuh':
+      case 'graylog':
+      case 'owasp_zap':
+      case 'packetfence':
+        return 'bg-gradient-to-br from-gray-800 to-gray-900 border-green-500';
       case 'internet':
         return 'bg-gray-800 border-gray-600';
       default:
@@ -135,12 +193,11 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
   
   // Get node stroke style based on if it's a HexaShield component
   const getNodeStrokeStyle = (type) => {
-    return type.includes('monitoring') || 
-           type.includes('protection') || 
-           type.includes('central') || 
-           type.includes('authentication') 
-      ? "stroke-dasharray: 4,2"
-      : "";
+    const hexaShieldComponents = [
+      'monitoring', 'protection', 'central_management', 'authentication',
+      'modsecurity', 'greensql', 'suricata', 'wazuh', 'graylog', 'owasp_zap', 'packetfence'
+    ];
+    return hexaShieldComponents.some(c => type.includes(c)) ? "stroke-dasharray: 4,2" : "";
   };
   
   // ==================== Node and Edge Management ====================
@@ -148,25 +205,41 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
   // Generate default nodes for first-time setup
   function getDefaultNodes() {
     return [
+      // Internet and Network Infrastructure
       { id: 'internet-1', type: 'internet', name: 'Internet', x: 400, y: 50, isHexaShield: false },
       { id: 'router-1', type: 'router', name: 'Edge Router', x: 400, y: 140, isHexaShield: false },
       { id: 'firewall-1', type: 'firewall', name: 'Perimeter Firewall', x: 400, y: 230, isHexaShield: false },
       { id: 'load-balancer', type: 'loadBalancer', name: 'Load Balancer', x: 400, y: 320, isHexaShield: false },
+      
+      // SME Infrastructure
       { id: 'webapp-1', type: 'webapp', name: 'Web Application', x: 250, y: 400, isHexaShield: false },
       { id: 'webapp-2', type: 'webapp', name: 'API Service', x: 400, y: 400, isHexaShield: false },
       { id: 'database-1', type: 'database', name: 'Database', x: 550, y: 400, isHexaShield: false },
+      { id: 'fileserver-1', type: 'fileserver', name: 'File Server', x: 250, y: 500, isHexaShield: false },
+      { id: 'erp-system', type: 'erp_system', name: 'ERP System', x: 400, y: 500, isHexaShield: false },
+      { id: 'crm-system', type: 'crm_system', name: 'CRM System', x: 550, y: 500, isHexaShield: false },
       
       // HexaShield Components
       { id: 'hexashield-core', type: 'central_management', name: 'HexaShield Core', x: 700, y: 230, isHexaShield: true },
       { id: 'hexashield-monitor', type: 'monitoring', name: 'HexaShield Monitoring', x: 700, y: 140, isHexaShield: true },
       { id: 'hexashield-protection', type: 'protection', name: 'HexaShield Protection', x: 700, y: 320, isHexaShield: true },
       { id: 'hexashield-auth', type: 'authentication', name: 'HexaShield Auth', x: 700, y: 400, isHexaShield: true },
+      
+      // HexaShield Tools
+      { id: 'tool-modsecurity', type: 'modsecurity', name: 'ModSecurity WAF', x: 850, y: 180, isHexaShield: true },
+      { id: 'tool-greensql', type: 'greensql', name: 'GreenSQL', x: 850, y: 250, isHexaShield: true },
+      { id: 'tool-wazuh', type: 'wazuh', name: 'Wazuh Agents', x: 850, y: 320, isHexaShield: true },
+      { id: 'tool-packetfence', type: 'packetfence', name: 'PacketFence', x: 850, y: 390, isHexaShield: true },
+      { id: 'tool-suricata', type: 'suricata', name: 'Suricata IDS/IPS', x: 950, y: 180, isHexaShield: true },
+      { id: 'tool-graylog', type: 'graylog', name: 'Graylog', x: 950, y: 250, isHexaShield: true },
+      { id: 'tool-owasp', type: 'owasp_zap', name: 'OWASP ZAP', x: 950, y: 320, isHexaShield: true },
     ];
   }
   
   // Generate default edges for first-time setup
   function getDefaultEdges() {
     return [
+      // SME Infrastructure connections
       { id: 'e1', from: 'internet-1', to: 'router-1', status: 'active' },
       { id: 'e2', from: 'router-1', to: 'firewall-1', status: 'active' },
       { id: 'e3', from: 'firewall-1', to: 'load-balancer', status: 'active' },
@@ -174,14 +247,38 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
       { id: 'e5', from: 'load-balancer', to: 'webapp-2', status: 'active' },
       { id: 'e6', from: 'webapp-1', to: 'database-1', status: 'active' },
       { id: 'e7', from: 'webapp-2', to: 'database-1', status: 'active' },
+      { id: 'e8', from: 'webapp-1', to: 'fileserver-1', status: 'active' },
+      { id: 'e9', from: 'erp-system', to: 'database-1', status: 'active' },
+      { id: 'e10', from: 'crm-system', to: 'database-1', status: 'active' },
       
-      // HexaShield connection to existing components
-      { id: 'e8', from: 'hexashield-core', to: 'hexashield-monitor', status: 'secure' },
-      { id: 'e9', from: 'hexashield-core', to: 'hexashield-protection', status: 'secure' },
-      { id: 'e10', from: 'hexashield-core', to: 'hexashield-auth', status: 'secure' },
-      { id: 'e11', from: 'hexashield-protection', to: 'firewall-1', status: 'integration' },
-      { id: 'e12', from: 'hexashield-monitor', to: 'router-1', status: 'integration' },
-      { id: 'e13', from: 'hexashield-auth', to: 'database-1', status: 'integration' },
+      // HexaShield core component connections
+      { id: 'e11', from: 'hexashield-core', to: 'hexashield-monitor', status: 'secure' },
+      { id: 'e12', from: 'hexashield-core', to: 'hexashield-protection', status: 'secure' },
+      { id: 'e13', from: 'hexashield-core', to: 'hexashield-auth', status: 'secure' },
+      
+      // HexaShield tools connections to main components
+      { id: 'e14', from: 'hexashield-protection', to: 'tool-modsecurity', status: 'secure' },
+      { id: 'e15', from: 'hexashield-protection', to: 'tool-greensql', status: 'secure' },
+      { id: 'e16', from: 'hexashield-protection', to: 'tool-wazuh', status: 'secure' },
+      { id: 'e17', from: 'hexashield-protection', to: 'tool-packetfence', status: 'secure' },
+      { id: 'e18', from: 'hexashield-monitor', to: 'tool-suricata', status: 'secure' },
+      { id: 'e19', from: 'hexashield-monitor', to: 'tool-graylog', status: 'secure' },
+      { id: 'e20', from: 'hexashield-monitor', to: 'tool-owasp', status: 'secure' },
+      
+      // Integration connections between HexaShield tools and SME infrastructure
+      { id: 'e21', from: 'tool-modsecurity', to: 'webapp-1', status: 'integration' },
+      { id: 'e22', from: 'tool-modsecurity', to: 'webapp-2', status: 'integration' },
+      { id: 'e23', from: 'tool-greensql', to: 'database-1', status: 'integration' },
+      { id: 'e24', from: 'tool-suricata', to: 'router-1', status: 'integration' },
+      { id: 'e25', from: 'tool-wazuh', to: 'webapp-1', status: 'integration' },
+      { id: 'e26', from: 'tool-wazuh', to: 'webapp-2', status: 'integration' },
+      { id: 'e27', from: 'tool-wazuh', to: 'database-1', status: 'integration' },
+      { id: 'e28', from: 'tool-packetfence', to: 'router-1', status: 'integration' },
+      { id: 'e29', from: 'tool-owasp', to: 'webapp-1', status: 'integration' },
+      { id: 'e30', from: 'tool-owasp', to: 'webapp-2', status: 'integration' },
+      { id: 'e31', from: 'hexashield-auth', to: 'erp-system', status: 'integration' },
+      { id: 'e32', from: 'hexashield-auth', to: 'crm-system', status: 'integration' },
+      { id: 'e33', from: 'tool-graylog', to: 'firewall-1', status: 'integration' },
     ];
   }
   
@@ -591,7 +688,8 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
           </button>
           {showAddMenu && (
             <div className="absolute mt-32 bg-gray-800 border border-gray-600 rounded-md shadow-lg p-2 z-10">
-              <div className="space-y-1">
+              <div className="space-y-1 max-h-96 overflow-y-auto">
+                <h4 className="text-white text-sm font-medium mb-1 px-2">SME Infrastructure</h4>
                 <button 
                   className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
                   onClick={() => handleAddNode('server')}
@@ -627,7 +725,30 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
                   <Code className="h-4 w-4 mr-2 text-purple-400" />
                   Web Application
                 </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('fileserver')}
+                >
+                  <FileText className="h-4 w-4 mr-2 text-orange-400" />
+                  File Server
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('erp_system')}
+                >
+                  <Cpu className="h-4 w-4 mr-2 text-pink-400" />
+                  ERP System
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('crm_system')}
+                >
+                  <Users className="h-4 w-4 mr-2 text-cyan-400" />
+                  CRM System
+                </button>
+
                 <div className="border-t border-gray-700 my-1"></div>
+                <h4 className="text-white text-sm font-medium mb-1 px-2">HexaShield Components</h4>
                 <button 
                   className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
                   onClick={() => handleAddNode('central_management')}
@@ -656,6 +777,58 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
                   <Lock className="h-4 w-4 mr-2 text-amber-500" />
                   HexaShield Auth
                 </button>
+
+                <div className="border-t border-gray-700 my-1"></div>
+                <h4 className="text-white text-sm font-medium mb-1 px-2">HexaShield Tools</h4>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('modsecurity')}
+                >
+                  <Shield className="h-4 w-4 mr-2 text-purple-500" />
+                  ModSecurity WAF
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('greensql')}
+                >
+                  <Database className="h-4 w-4 mr-2 text-green-600" />
+                  GreenSQL
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('suricata')}
+                >
+                  <Search className="h-4 w-4 mr-2 text-blue-600" />
+                  Suricata IDS/IPS
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('wazuh')}
+                >
+                  <Shield className="h-4 w-4 mr-2 text-orange-600" />
+                  Wazuh Agents
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('graylog')}
+                >
+                  <FileText className="h-4 w-4 mr-2 text-gray-600" />
+                  Graylog
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('owasp_zap')}
+                >
+                  <Code className="h-4 w-4 mr-2 text-red-600" />
+                  OWASP ZAP
+                </button>
+                <button 
+                  className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-sm flex items-center text-white"
+                  onClick={() => handleAddNode('packetfence')}
+                >
+                  <Wifi className="h-4 w-4 mr-2 text-indigo-600" />
+                  PacketFence NAC
+                </button>
               </div>
             </div>
           )}
@@ -670,10 +843,10 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
       </div>
       
       <div className="text-xs text-gray-400 mb-2">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center">
             <div className="w-4 h-0.5 bg-gray-400 mr-1"></div>
-            <span>Regular Connection</span>
+            <span>SME Infrastructure</span>
           </div>
           <div className="flex items-center">
             <div className="w-4 h-0.5 bg-blue-500 stroke-dasharray-2 mr-1"></div>
@@ -681,7 +854,15 @@ const NetworkTopologyGraph = ({ initialNetwork, onSave }) => {
           </div>
           <div className="flex items-center">
             <div className="w-4 h-0.5 bg-green-500 mr-1"></div>
-            <span>Secure Connection</span>
+            <span>Secure HexaShield Connection</span>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full border border-blue-500 mr-1"></div>
+            <span>HexaShield Component</span>
+          </div>
+          <div className="flex items-center">
+            <div className="h-3 w-3 rounded-full border border-green-500 mr-1"></div>
+            <span>HexaShield Tool</span>
           </div>
         </div>
       </div>

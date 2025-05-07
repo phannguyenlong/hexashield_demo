@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSecurity } from '../contexts/SecurityContext';
-import { Layers, Server, Database, Globe, Code, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
+import { 
+  Layers, Server, Database, Globe, Code, CheckCircle, 
+  XCircle, AlertTriangle, Info, FileText, Cpu, Users, 
+  Shield, Lock, Search, Activity, BarChart
+} from 'lucide-react';
 
 // Components
 import IntegrationCard from '../components/integration/IntegrationCard';
@@ -31,6 +35,50 @@ const IntegrationPage = () => {
     }
   }, []);
 
+  // HexaShield architecture components
+  const architectureComponents = [
+    {
+      title: "Security Monitoring Component",
+      color: "bg-blue-700",
+      tools: [
+        { name: "Suricata", description: "Network-based intrusion detection/prevention system", icon: <Search className="h-5 w-5 text-blue-400" /> },
+        { name: "OSSEC/Wazuh", description: "Host-based monitoring agents for security events", icon: <Shield className="h-5 w-5 text-blue-400" /> },
+        { name: "Graylog", description: "Centralized log aggregation and analysis", icon: <FileText className="h-5 w-5 text-blue-400" /> },
+        { name: "OWASP ZAP", description: "Application vulnerability scanning", icon: <Code className="h-5 w-5 text-blue-400" /> }
+      ]
+    },
+    {
+      title: "Protection Component",
+      color: "bg-green-700",
+      tools: [
+        { name: "ModSecurity", description: "Web Application Firewall with OWASP rule sets", icon: <Shield className="h-5 w-5 text-green-400" /> },
+        { name: "GreenSQL", description: "Database security monitoring and query analysis", icon: <Database className="h-5 w-5 text-green-400" /> },
+        { name: "PacketFence", description: "Network access control and device authentication", icon: <Globe className="h-5 w-5 text-green-400" /> },
+        { name: "Wazuh Agents", description: "Endpoint protection with application control", icon: <Cpu className="h-5 w-5 text-green-400" /> }
+      ]
+    },
+    {
+      title: "Response Component",
+      color: "bg-amber-700",
+      tools: [
+        { name: "WAF Response", description: "Web Application Firewall response actions", icon: <Activity className="h-5 w-5 text-amber-400" /> },
+        { name: "Database Security", description: "Database security countermeasures", icon: <Database className="h-5 w-5 text-amber-400" /> },
+        { name: "Network Access Control", description: "Network access control enforcement", icon: <Server className="h-5 w-5 text-amber-400" /> },
+        { name: "Endpoint Protection", description: "Endpoint protection response mechanisms", icon: <Shield className="h-5 w-5 text-amber-400" /> }
+      ]
+    },
+    {
+      title: "Central Management",
+      color: "bg-purple-700",
+      tools: [
+        { name: "Unified Dashboard", description: "Single pane of glass for security monitoring", icon: <BarChart className="h-5 w-5 text-purple-400" /> },
+        { name: "Orchestration", description: "Security workflow coordination", icon: <Activity className="h-5 w-5 text-purple-400" /> },
+        { name: "Configuration Management", description: "Centralized management of security components", icon: <Layers className="h-5 w-5 text-purple-400" /> },
+        { name: "User Authentication", description: "Secure user access and authorization", icon: <Lock className="h-5 w-5 text-purple-400" /> }
+      ]
+    }
+  ];
+
   // Mock integration points
   const integrationPoints = [
     {
@@ -39,7 +87,8 @@ const IntegrationPage = () => {
       description: 'Configure network-level security components and monitoring',
       icon: <Globe className="h-8 w-8 text-blue-500" />,
       status: 'configured',
-      component: 'network_intrusion'
+      component: 'network_intrusion',
+      tools: ['Suricata', 'PacketFence']
     },
     {
       id: 'webapp',
@@ -47,7 +96,8 @@ const IntegrationPage = () => {
       description: 'Web Application Firewall and XSS protection configuration',
       icon: <Code className="h-8 w-8 text-purple-500" />,
       status: 'configured',
-      component: 'web_application_firewall'
+      component: 'web_application_firewall',
+      tools: ['ModSecurity', 'OWASP ZAP']
     },
     {
       id: 'database',
@@ -55,7 +105,8 @@ const IntegrationPage = () => {
       description: 'Database firewall and SQL injection protection',
       icon: <Database className="h-8 w-8 text-green-500" />,
       status: 'configured',
-      component: 'database_firewall'
+      component: 'database_firewall',
+      tools: ['GreenSQL']
     },
     {
       id: 'auth',
@@ -63,7 +114,26 @@ const IntegrationPage = () => {
       description: 'Authentication system and LDAP injection protection',
       icon: <Server className="h-8 w-8 text-amber-500" />,
       status: 'not_configured',
-      component: 'authentication_system'
+      component: 'authentication_system',
+      tools: ['Keycloak']
+    },
+    {
+      id: 'endpoint',
+      title: 'Endpoint Protection',
+      description: 'Host-based monitoring and endpoint security integration',
+      icon: <Cpu className="h-8 w-8 text-red-500" />,
+      status: 'configured',
+      component: 'endpoint_protection',
+      tools: ['Wazuh Agents']
+    },
+    {
+      id: 'logs',
+      title: 'Log Management',
+      description: 'Centralized logging and event correlation',
+      icon: <FileText className="h-8 w-8 text-gray-500" />,
+      status: 'configured',
+      component: 'log_management',
+      tools: ['Graylog']
     }
   ];
   
@@ -134,16 +204,93 @@ const IntegrationPage = () => {
                  initialNetwork={savedTopology} 
                  onSave={handleSaveTopology} 
                />;
+      case 'architecture':
+        return (
+          <div className="space-y-6">
+            <p className="text-gray-300">
+              The HexaShield framework is built on a modular architecture with four main components that work together to provide comprehensive protection. Each component integrates specific open-source security tools.
+            </p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {architectureComponents.map((component, idx) => (
+                <div key={idx} className={`${component.color} rounded-lg p-4 shadow`}>
+                  <h3 className="text-lg font-bold text-white mb-3">{component.title}</h3>
+                  <div className="space-y-3">
+                    {component.tools.map((tool, toolIdx) => (
+                      <div key={toolIdx} className="bg-black bg-opacity-20 p-3 rounded-lg flex items-start">
+                        <div className="mr-3 mt-1">{tool.icon}</div>
+                        <div>
+                          <h4 className="text-white font-medium">{tool.name}</h4>
+                          <p className="text-gray-200 text-sm">{tool.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="bg-gray-700 rounded-lg p-4 shadow">
+              <h3 className="text-lg font-bold text-white mb-3">Injection Attack Protection</h3>
+              <p className="text-gray-300 mb-3">
+                HexaShield provides specialized protection against different types of injection attacks through a multi-layered approach:
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-800 p-3 rounded-lg">
+                  <h4 className="text-white font-medium flex items-center">
+                    <Database className="h-4 w-4 mr-2 text-blue-400" />
+                    SQL Injection Protection
+                  </h4>
+                  <ul className="text-gray-300 text-sm mt-2 space-y-1">
+                    <li>• ModSecurity WAF rules</li>
+                    <li>• GreenSQL query analysis</li>
+                    <li>• Parameterized query enforcement</li>
+                    <li>• Input validation and sanitization</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-gray-800 p-3 rounded-lg">
+                  <h4 className="text-white font-medium flex items-center">
+                    <Code className="h-4 w-4 mr-2 text-purple-400" />
+                    XSS Protection
+                  </h4>
+                  <ul className="text-gray-300 text-sm mt-2 space-y-1">
+                    <li>• Content Security Policy</li>
+                    <li>• Output encoding</li>
+                    <li>• DOMPurify JavaScript filtering</li>
+                    <li>• Context-aware validation</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-gray-800 p-3 rounded-lg">
+                  <h4 className="text-white font-medium flex items-center">
+                    <Users className="h-4 w-4 mr-2 text-amber-400" />
+                    LDAP Injection Protection
+                  </h4>
+                  <ul className="text-gray-300 text-sm mt-2 space-y-1">
+                    <li>• Authentication system hardening</li>
+                    <li>• Input filtering and sanitization</li>
+                    <li>• Keycloak security features</li>
+                    <li>• Pattern-based detection</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
       default:
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {integrationPoints.map(point => (
-              <IntegrationCard
-                key={point.id}
-                integration={point}
-                onClick={() => setActiveTab(point.id)}
-              />
-            ))}
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {integrationPoints.map(point => (
+                <IntegrationCard
+                  key={point.id}
+                  integration={point}
+                  onClick={() => setActiveTab(point.id)}
+                />
+              ))}
+            </div>
           </div>
         );
     }
@@ -154,6 +301,16 @@ const IntegrationPage = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white">System Integration</h2>
         <div className="flex space-x-2">
+          <button
+            className={`px-4 py-2 rounded-md text-white ${
+              activeTab === 'architecture' 
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-gray-600 hover:bg-gray-700'
+            }`}
+            onClick={() => setActiveTab('architecture')}
+          >
+            Architecture
+          </button>
           <button
             className={`px-4 py-2 rounded-md text-white ${
               activeTab === 'test' 
@@ -226,12 +383,17 @@ const IntegrationPage = () => {
                         ? 'border-green-500 bg-gray-700' 
                         : 'border-gray-600 bg-gray-700 opacity-70'
                     }`}
+                    onClick={() => setActiveTab(point.id)}
+                    style={{cursor: 'pointer'}}
                   >
                     <div className="inline-flex items-center justify-center p-3 bg-gray-800 rounded-lg mb-2">
                       {point.icon}
                     </div>
                     <h4 className="text-white font-medium">{point.title}</h4>
                     <p className="text-gray-400 text-xs">{point.status === 'configured' ? 'Configured' : 'Not Configured'}</p>
+                    <div className="mt-2 text-gray-400 text-xs">
+                      <p>Tools: {point.tools.join(', ')}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -321,7 +483,7 @@ const IntegrationPage = () => {
 
       {/* Integration Configuration Content */}
       <div className="bg-gray-700 rounded-lg shadow overflow-hidden">
-        {activeTab !== 'overview' && activeTab !== 'topology' && (
+        {activeTab !== 'overview' && activeTab !== 'topology' && activeTab !== 'architecture' && (
           <div className="bg-gray-800 border-b border-gray-600 px-4 py-3">
             {activeTab !== 'test' ? (
               <h3 className="text-lg font-medium text-white">

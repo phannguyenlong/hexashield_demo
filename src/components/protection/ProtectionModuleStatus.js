@@ -43,12 +43,22 @@ const ProtectionModuleStatus = ({ title, status, details, icon }) => {
       
       <div className="grid grid-cols-2 gap-2">
         {details && Object.entries(details).map(([key, value]) => (
-          <div key={key}>
-            <p className="text-xs text-gray-400">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-            <p className="text-sm text-white">{value}</p>
-          </div>
+          key !== 'tool' ? (
+            <div key={key}>
+              <p className="text-xs text-gray-400">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+              <p className="text-sm text-white">{value}</p>
+            </div>
+          ) : null
         ))}
       </div>
+      
+      {/* Added tool information display */}
+      {details && details.tool && (
+        <div className="mt-3 bg-gray-700 bg-opacity-50 p-2 rounded text-center">
+          <span className="text-xs text-gray-300">Powered by: </span>
+          <span className="text-sm text-white font-medium">{details.tool}</span>
+        </div>
+      )}
     </div>
   );
 };
