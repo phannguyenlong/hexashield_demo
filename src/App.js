@@ -14,7 +14,8 @@ import DashboardPage from './pages/DashboardPage';
 import MonitoringPage from './pages/MonitoringPage';
 import ProtectionPage from './pages/ProtectionPage';
 import ResponsePage from './pages/ResponsePage';
-import AttackDetailsPage from './pages/AttackDetailsPage'; // New page
+import AttackDetailsPage from './pages/AttackDetailsPage';
+import AttackReportPage from './pages/AttackReportPage';
 import RuleCustomizationPage from './pages/RuleCustomizationPage';
 import IntegrationPage from './pages/IntegrationPage';
 import SimulationPage from './pages/SimulationPage';
@@ -60,8 +61,9 @@ const App = () => {
                   <Route path="protection" element={<ProtectionPage />} />
                   <Route path="response" element={<ResponsePage />} />
                   <Route path="response/attack-details" element={<AttackDetailsPage />} />
+                  <Route path="response/attack-report" element={<AttackReportPage />} />
                   <Route path="rules" element={<RuleCustomizationPage />} />
-                  <Route path="integration" element={<IntegrationPage />} />
+                  <Route path="integrations" element={<IntegrationPage />} />
                   <Route path="simulation" element={<SimulationPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>

@@ -11,6 +11,11 @@ const AlertOverlay = ({ attack, onClose }) => {
     navigate('/response/attack-details');
     onClose();
   };
+
+  const handleViewReport = () => {
+    navigate(`/response/attack-report?attack=${attack.type}`);
+    onClose();
+  };
   
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-75">
@@ -33,42 +38,33 @@ const AlertOverlay = ({ attack, onClose }) => {
           </button>
         </div>
         
-        <div className="mb-6">
-          <div className="bg-gray-900 p-3 rounded-md mb-4">
-            <p className="text-white">
-              <span className="font-medium">Attack Type:</span>{' '}
-              <span className="text-red-400 font-medium">
-                {attack.type.replace('_', ' ').toUpperCase()}
-              </span>
-            </p>
-            <p className="text-white text-sm mt-1">{attack.description}</p>
-            <p className="text-gray-400 text-xs mt-2">
-              Source IP: {attack.source} | Target: {attack.target}
-            </p>
+        <div className="space-y-4">
+          <div className="bg-gray-750 p-4 rounded-lg border border-gray-700">
+            <h4 className="text-white font-medium mb-2">Attack Details</h4>
+            <div className="space-y-2 text-sm">
+              <p className="text-gray-300">
+                <span className="text-gray-400">Type:</span> {attack.type.replace('_', ' ')}
+              </p>
+              <p className="text-gray-300">
+                <span className="text-gray-400">Source:</span> {attack.source}
+              </p>
+              <p className="text-gray-300">
+                <span className="text-gray-400">Target:</span> {attack.target}
+              </p>
+              <p className="text-gray-300">
+                <span className="text-gray-400">Time:</span> {new Date(attack.timestamp).toLocaleString()}
+              </p>
+            </div>
           </div>
           
-          <div className="flex items-center bg-blue-900 bg-opacity-30 p-3 rounded-md border border-blue-600">
-            <Shield className="h-5 w-5 text-blue-500 mr-2" />
-            <p className="text-blue-300 text-sm">
-              HexaShield protection has detected this attack and is actively responding
-            </p>
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={handleViewDetails}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+            >
+              View Details
+            </button>
           </div>
-        </div>
-        
-        <div className="flex justify-between">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md"
-          >
-            Dismiss
-          </button>
-          <button
-            onClick={handleViewDetails}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center"
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            View Attack Details
-          </button>
         </div>
       </div>
     </div>

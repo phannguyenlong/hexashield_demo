@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSecurity } from '../contexts/SecurityContext';
 import { CheckCircle, XCircle, Clock, Shield, AlertCircle, Activity, Server, Database } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AttackDetailsPage = () => {
   const { activeAttack, attackDetectionStep, attackDetectionComplete } = useSecurity();
   const [progress, setProgress] = useState(0);
+  const navigate = useNavigate();
   
   useEffect(() => {
     if (!activeAttack) return;
@@ -16,6 +18,17 @@ const AttackDetailsPage = () => {
     setProgress(percentage);
     
   }, [activeAttack, attackDetectionStep, attackDetectionComplete]);
+  
+  // Redirect to report page after detection is complete
+  useEffect(() => {
+    if (attackDetectionComplete && activeAttack) {
+      const type = activeAttack.type || 'sql_injection';
+      // Delay for a short moment to show the success message
+      setTimeout(() => {
+        navigate(`/response/attack-report?attack=${type}`);
+      }, 1500);
+    }
+  }, [attackDetectionComplete, activeAttack, navigate]);
   
   if (!activeAttack) {
     return (
@@ -150,6 +163,12 @@ const AttackDetailsPage = () => {
                     <p className="text-green-300 text-sm">
                       The attack has been blocked and all countermeasures have been deployed
                     </p>
+                    <button
+                      className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                      onClick={() => navigate(`/response/attack-report?attack=${activeAttack.type || 'sql_injection'}`)}
+                    >
+                      View Attack Report
+                    </button>
                   </div>
                 </div>
               </div>
