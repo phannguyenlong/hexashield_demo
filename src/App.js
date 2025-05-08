@@ -63,7 +63,7 @@ const App = () => {
                   <Route path="response/attack-details" element={<AttackDetailsPage />} />
                   <Route path="response/attack-report" element={<AttackReportPage />} />
                   <Route path="rules" element={<RuleCustomizationPage />} />
-                  <Route path="integrations" element={<IntegrationPage />} />
+                  <Route path="integration" element={<IntegrationPage />} />
                   <Route path="simulation" element={<SimulationPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
