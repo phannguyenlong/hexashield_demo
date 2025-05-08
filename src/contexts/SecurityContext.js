@@ -9,7 +9,7 @@ export const SecurityProvider = ({ children }) => {
     activeThreats: 0,
     blockedAttacks: 0,
     vulnerabilities: 0,
-    systemStatus: 'operational', // Changed from 'under_attack' to 'operational'
+    systemStatus: 'operational',
   });
   
   const [securityEvents, setSecurityEvents] = useState([]);
@@ -20,7 +20,7 @@ export const SecurityProvider = ({ children }) => {
   const [attackDetectionStep, setAttackDetectionStep] = useState(0);
   const [attackDetectionComplete, setAttackDetectionComplete] = useState(false);
   
-  // Initialize with mock data
+  // Initialize with mock data and WebSocket connection
   useEffect(() => {
     // Load initial security data
     setSecurityEvents(mockSecurityData.events);
@@ -29,6 +29,33 @@ export const SecurityProvider = ({ children }) => {
     
     // Calculate initial security status
     updateSecurityStatus();
+    
+    // Connect to WebSocket server
+    const ws = new WebSocket('ws://localhost:3001');
+    
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      
+      if (data.type === 'attack_triggered') {
+        handleRemoteAttackTrigger(data.attackType);
+      }
+    };
+    
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+    
+    ws.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+    
+    return () => {
+      ws.close();
+    };
   }, []);
   
   // Update security status based on events
@@ -98,9 +125,8 @@ export const SecurityProvider = ({ children }) => {
     setComponents(updatedComponents);
   };
   
-  // New function to trigger attack mode
-  const triggerAttackMode = (attackType = 'sql_injection') => {
-    // Create a simulated attack incident
+  // Add a new function to handle remote attack triggers (no API call)
+  const handleRemoteAttackTrigger = (attackType = 'sql_injection') => {
     const attackIncident = {
       id: `attack-${Date.now()}`,
       type: attackType,
@@ -119,28 +145,18 @@ export const SecurityProvider = ({ children }) => {
         severity: 'critical'
       }
     };
-    
-    // Add the attack to security events
     addSecurityEvent(attackIncident);
-    
-    // Update security status to show system under attack
     setSecurityStatus(prev => ({
       ...prev,
       threatLevel: 'critical',
       activeThreats: prev.activeThreats + 1,
       systemStatus: 'under_attack'
     }));
-    
-    // Show attack alert
     setActiveAttack(attackIncident);
     setShowAttackAlert(true);
     setAttackDetectionStep(0);
     setAttackDetectionComplete(false);
-    
-    // Start the attack detection sequence
     startAttackDetection(attackIncident);
-    
-    return attackIncident;
   };
   
   // Function to close attack alert
@@ -273,7 +289,7 @@ export const SecurityProvider = ({ children }) => {
     addRule,
     deleteRule,
     updateComponentStatus,
-    triggerAttackMode,
+    handleRemoteAttackTrigger,
     closeAttackAlert
   };
   
